@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CommuNARS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+            background: #f4f7f6; /* A very light, neutral gray/blue */
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .ocean-waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(to bottom, rgba(0,119,190,0.3), rgba(0,119,190,0.6));
+            z-index: 0;
+            animation: wave 3s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .boat {
+            position: fixed;
+            bottom: 100px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .boat-left {
+            left: 10%;
+        }
+
+        .boat-right {
+            right: 10%;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        .boat svg {
+            width: 80px;
+            height: 60px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0077BE, #00A5E0);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .nurse-icon {
+            display: inline-block;
+            margin: 15px 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .student-info {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .student-info h3 {
+            color: #0077BE;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #0077BE;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .scenario-selector {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .scenario-selector h2 {
+            color: #0077BE;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .scenario-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0077BE;
+        }
+
+        .scenario-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .scenario-btn {
+            background: linear-gradient(135deg, #00A5E0, #0077BE);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .scenario-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .scenario-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .scenario-btn.completed {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+        }
+
+        .scenario-btn.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+
+        .question-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #0077BE;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #bbdefb;
+            border-color: #0077BE;
+        }
+
+        .option.correct {
+            background: #c8e6c9;
+            border-color: #4caf50;
+        }
+
+        .option.incorrect {
+            background: #ffcdd2;
+            border-color: #f44336;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feedback.correct {
+            background: #c8e6c9;
+            border-left: 5px solid #4caf50;
+        }
+
+        .feedback.incorrect {
+            background: #ffcdd2;
+            border-left: 5px solid #f44336;
+        }
+
+        .feedback h3 {
+            margin-bottom: 10px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: #0077BE;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #005a8c;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.1em;
+            color: #0077BE;
+            font-weight: bold;
+        }
+
+        .completion {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .completion.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+
+        .completion h2 {
+            color: #4caf50;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .completion .final-score {
+            font-size: 3em;
+            color: #0077BE;
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .export-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .results-summary {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .results-summary h3 {
+            color: #0077BE;
+            margin-bottom: 15px;
+        }
+
+        .answer-item {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            background: white;
+            border-left: 4px solid #e0e0e0;
+        }
+
+        .answer-item.correct-answer {
+            border-left-color: #4caf50;
+        }
+
+        .answer-item.incorrect-answer {
+            border-left-color: #f44336;
+        }
+
+        .admin-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .admin-panel h2 {
+            color: #0077BE;
+            margin-bottom: 15px;
+        }
+
+        .view-results-btn {
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+
+        .view-results-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .all-results {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .student-result {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0077BE;
+        }
+
+        .likert-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            gap: 10px;
+        }
+
+        .likert-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px 10px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none; /* Prevents text selection on click */
+        }
+
+        .likert-option:hover:not(.selected) {
+            background: #e3f2fd;
+            border-color: #0077BE;
+            transform: translateY(-3px);
+        }
+
+        .likert-option.selected {
+            background: #bbdefb;
+            border-color: #0077BE;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 119, 190, 0.4);
+        }
+
+        .likert-label {
+            font-size: 0.85em;
+            color: #666;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        /* New Styles for Final Feedback */
+        #finalFeedback {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        #finalFeedback h2 {
+            color: #0077BE;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .feedback-item {
+            margin-bottom: 25px;
+            text-align: left;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+
+        .feedback-item label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .submit-feedback-btn {
+            background: linear-gradient(135deg, #0077BE, #00A5E0);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .submit-feedback-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        /* End New Styles */
+
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .boat {
+                display: none;
+            }
+            .likert-scale {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ocean-waves"></div>
+    
+    <div class="boat boat-left">
+        <svg viewBox="0 0 100 80">
+            <path d="M10,60 L20,30 L80,30 L90,60 Z" fill="#8B4513"/>
+            <rect x="45" y="10" width="10" height="20" fill="#654321"/>
+            <polygon points="55,10 55,30 75,20" fill="#FFE4B5"/>
+        </svg>
+    </div>
+
+    <div class="boat boat-right">
+        <svg viewBox="0 0 100 80">
+            <path d="M10,60 L20,30 L80,30 L90,60 Z" fill="#8B4513"/>
+            <rect x="45" y="10" width="10" height="20" fill="#654321"/>
+            <polygon points="45,10 45,30 25,20" fill="#FFE4B5"/>
+        </svg>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏥 CommuNARS 🏥</h1>
+            <p>Group 35 District Hospital</p>
+            <div class="nurse-icon">
+                <svg width="60" height="60" viewBox="0 0 100 100">
+                    <circle cx="50" cy="30" r="15" fill="#FFE4B5"/>
+                    <rect x="40" y="45" width="20" height="30" fill="white"/>
+                    <rect x="45" y="50" width="10" height="3" fill="#FF0000"/>
+                    <rect x="48" y="47" width="4" height="9" fill="#FF0000"/>
+                </svg>
+            </div>
+            <p><strong>General Scenario:</strong> You are the only community health nurse assigned to Barangay Pinagpala, a small coastal village isolated by shifting tides and limited transport. Medical supplies arrive late due to “mysterious paperwork delays” and missing inventory in the supply chain.
+
+As the only nurse on-duty, the community depends on you for almost everything: emergencies, health teaching, and chronic care. With limited resources, questionable supply chains, and high expectations, every decision you make affects the safety of the entire village.
+
+</div>
+            <p><strong> Your mission:
+Keep the community safe by making careful and informed decisions. Each choice you make will affect patient outcomes and the overall well-being of the barangay.
+ 
+         <p><strong> Ready to take on the challenge?</p>
+
+        <div class="admin-panel" id="adminPanel" style="display: none;">
+            <h2>📊 Instructor Dashboard</h2>
+            <button class="view-results-btn" onclick="viewAllResults()">View All Student Results</button>
+            <button class="export-btn" onclick="exportAllResults()">Export All Results (CSV)</button>
+            <button class="export-btn" onclick="clearAllResults()">Clear All Data</button>
+            <button class="view-results-btn" onclick="logoutInstructor()">🔒 Logout</button>
+            <div id="allResultsDisplay"></div>
+        </div>
+
+        <div class="admin-panel" id="instructorLogin">
+            <h2>🔐 Instructor Access</h2>
+            <div class="form-group">
+                <label for="instructorPassword">Enter Instructor Password:</label>
+                <input type="password" id="instructorPassword" placeholder="Password" onkeypress="if(event.key==='Enter') instructorLogin()">
+            </div>
+            <button class="start-btn" onclick="instructorLogin()">Access Dashboard</button>
+        </div>
+
+        <div class="student-info" id="studentInfo">
+            <h3>📝 Student Information</h3>
+            <div class="form-group">
+                <label for="studentName">Full Name:</label>
+                <input type="text" id="studentName" placeholder="Enter your full name" required>
+            </div>
+            <div class="form-group">
+                <label for="studentEmail">Email Address:</label>
+                <input type="email" id="studentEmail" placeholder="Enter your email address" required>
+            </div>
+            <div class="form-group">
+                <label for="studentYear">Year and Section:</label>
+                <input type="text" id="studentYear" placeholder="e.g., 3rd Year - Section A" required>
+            </div>
+            <button class="start-btn" onclick="submitStudentInfo()">Start Simulation</button>
+        </div>
+
+        <div class="scenario-selector" id="scenarioSelector" style="display: none;">
+            <h2>📋 Complete All Scenarios</h2>
+            <div class="scenario-info">
+                <strong>⚠️ Important:</strong> You must complete all three scenarios to finish the simulation. After completing all scenarios, you'll provide feedback about your experience.
+            </div>
+            <div class="scenario-buttons">
+                <button class="scenario-btn" data-scenario="cultural" id="btn-cultural" onclick="startScenario('cultural')">
+                    🌏 Cultural Awareness
+                </button>
+                <button class="scenario-btn" data-scenario="prioritization" id="btn-prioritization" onclick="startScenario('prioritization')">
+                    ⚕️ Prioritization
+                </button>
+                <button class="scenario-btn" data-scenario="improvisation" id="btn-improvisation" onclick="startScenario('improvisation')">
+                    🔧 Safe Improvisation
+                </button>
+            </div>
+        </div>
+
+        <div class="progress" id="progress" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div class="score" id="score">Score: 0/0</div>
+        </div>
+
+        <div class="question-container" id="questionContainer"></div>
+
+        <div class="completion" id="completion">
+            <h2>🎉 Scenario Complete! 🎉</h2>
+            <p>Score for <strong id="scenarioTitle"></strong>:</p>
+            <div class="final-score" id="scenarioScore"></div>
+            <p id="feedback-message"></p>
+            <div class="results-summary" id="resultsSummary"></div>
+            <button class="restart-btn" id="completionButton" onclick="handleScenarioCompletion()">Continue</button>
+        </div>
+        
+        <div class="completion" id="finalFeedback">
+            <h2>🌟 Simulation Feedback</h2>
+            <p>Thank you for completing all scenarios! Please provide your feedback below.</p>
+            
+            <div class="feedback-item">
+                <label>1. How well did the simulation address cultural considerations in coastal communities?</label>
+                <div class="likert-scale" data-question="q1" onmouseleave="clearLikertHover(this)">
+                    <div class="likert-option" data-value="1" onclick="selectLikert(this)">1<span class="likert-label">Not at all</span></div>
+                    <div class="likert-option" data-value="2" onclick="selectLikert(this)">2</div>
+                    <div class="likert-option" data-value="3" onclick="selectLikert(this)">3<span class="likert-label">Neutral</span></div>
+                    <div class="likert-option" data-value="4" onclick="selectLikert(this)">4</div>
+                    <div class="likert-option" data-value="5" onclick="selectLikert(this)">5<span class="likert-label">Very well</span></div>
+                </div>
+            </div>
+            
+            <div class="feedback-item">
+                <label>2. How helpful was the simulation in strengthening your prioritization and decision-making skills?</label>
+                <div class="likert-scale" data-question="q2" onmouseleave="clearLikertHover(this)">
+                    <div class="likert-option" data-value="1" onclick="selectLikert(this)">1<span class="likert-label">Not at all</span></div>
+                    <div class="likert-option" data-value="2" onclick="selectLikert(this)">2</div>
+                    <div class="likert-option" data-value="3" onclick="selectLikert(this)">3<span class="likert-label">Neutral</span></div>
+                    <div class="likert-option" data-value="4" onclick="selectLikert(this)">4</div>
+                    <div class="likert-option" data-value="5" onclick="selectLikert(this)">5<span class="likert-label">Very helpful</span></div>
+                </div>
+            </div>
+
+            <div class="feedback-item">
+                <label>3. How prepared did you feel to handle resource-limited situations after the simulation?</label>
+                <div class="likert-scale" data-question="q3" onmouseleave="clearLikertHover(this)">
+                    <div class="likert-option" data-value="1" onclick="selectLikert(this)">1<span class="likert-label">Not at all</span></div>
+                    <div class="likert-option" data-value="2" onclick="selectLikert(this)">2</div>
+                    <div class="likert-option" data-value="3" onclick="selectLikert(this)">3<span class="likert-label">Neutral</span></div>
+                    <div class="likert-option" data-value="4" onclick="selectLikert(this)">4</div>
+                    <div class="likert-option" data-value="5" onclick="selectLikert(this)">5<span class="likert-label">Very prepared</span></div>
+                </div>
+            </div>
+            
+            <button class="submit-feedback-btn" id="submitFeedbackBtn" onclick="submitFeedback()" Enable>Submit Feedback</button>
+            <div id="finalSummary" style="margin-top: 20px; display: none;">
+                <h3>✅ Final Results Submitted!</h3>
+                <p>Your overall performance is calculated below.</p>
+                <div class="final-score" id="totalScoreDisplay"></div>
+                <button class="export-btn" onclick="exportFinalResults()">Export Full Report (CSV)</button>
+                <button class="restart-btn" onclick="restartSimulation()">Start Over</button>
+            </div>
+        </div>
+        
+     <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYO3Wi5n9lR9ip8rkVhSLQOaZ35kL7TRo2hjSW9YnbyWbAEBDKoiMr83VVvG5QNfCj/exec';
+
+        const scenarios = {
+            cultural: {
+                key: 'cultural',
+                title: "Cultural Awareness",
+                description: "You are a community health nurse assigned to Barangay Hindi Pinagpala, a coastal community with residents who follow traditional beliefs.",
+                questions: [
+                    {
+                        text: "Mang Alecxis approaches you requesting advice for his child with recurring fever. He insists on consulting the local albularyo first. What is your best initial approach?",
+                        options: [
+                            "A. Refuse the albularyo's involvement and insist on modern medicine",
+                            "B. Listen to the family's concerns and ask about their traditional practices before suggesting care options",
+                            "C. Immediately administer medications without discussion",
+                            "D. Tell the family their approach is dangerous and must stop"
+                        ],
+                        correct: 1,
+                        Answer: "B. Demonstrates cultural sensitivity by acknowledging beliefs, building trust, and integrating care within the family's cultural context."
+                    },
+                    {
+                        text: "During a health education session on dengue prevention, most residents are skeptical of mosquito nets and vaccines, preferring herbal remedies. How should you proceed?",
+                        options: [
+                            "A. Force residents to use mosquito nets and vaccines",
+                            "B. Explain scientifically why preventive measures work while showing respect for herbal practices",
+                            "C. Avoid discussing dengue prevention to respect their beliefs",
+                            "D. Tell them herbal remedies are useless and dangerous"
+                        ],
+                        correct: 1,
+                        Answer: "B. This option balances health promotion with cultural respect and increases the likelihood of acceptance and compliance."
+                    },
+                    {
+                        text: "You want to introduce a handwashing campaign. The community believes washing with water alone is sufficient. How do you proceed?",
+                        options: [
+                            "A. Demonstrate handwashing benefits using analogies and involve community leaders",
+                            "B. Explain scientific rationale and ask residents to adopt new practice",
+                            "C. Show demonstrations and let families compare with their current practice",
+                            "D. Encourage gradual adoption without dismissing current beliefs"
+                        ],
+                        correct: 0,
+                        Answer: "A. This approach integrates visual demonstration, cultural relevance, and trusted influencers to maximize adoption."
+                    },
+                    {
+                        text: "Aling Des brings her febrile 3-year-old child to your health center. She states she already consulted an albularyo who performed 'hilot' and charged ₱15,000. The child's temperature is 37.9°C for 3 days. What is the MOST culturally competent response?",
+                        options: [
+                            "A. Emphasize the danger of delaying medical care and discourage all traditional practices",
+                            "B. Respect the mother's beliefs, perform a thorough assessment, educate her on medical findings in a culturally sensitive way, and provide necessary treatment",
+                            "C. Suggest the mother return home and monitor the child for another day before any intervention",
+                            "D. Prioritize immediate referral to the nearest hospital, minimizing discussion of the mother's cultural practices"
+                        ],
+                        correct: 1,
+                        Answer: "B. Respecting the mother's beliefs while performing thorough assessment and providing culturally sensitive education demonstrates the best approach."
+                    },
+                    {
+                        text: "Si Fatima, isang 4 na taong gulang na bata ay may lagnat sa loob ng 5 araw (38°C), matamlay, nagsusuka, at lumulubog ang mga mata. Ang ina ay kumonsulta muna sa albularyo at nag-aalangan sa 'Western medicine.' Ano ang pinaka-angkop na unang tugon mo?",
+                        options: [
+                            "A. 'Naiintindihan ko po na sinubukan ninyong tulungan ang bata. Malubha ang kanyang dehydration at kailangan niyang agarang gamutin. Ipapaliwanag ko po ang sitwasyon.'",
+                            "B. 'Bakit ngayon niyo lang dinala ang bata? Kritikal ang dehydration ng bata at maaari itong magdulot ng pagkasira ng bato.'",
+                            "C. 'Tama po ang inyong kapitbahay na dalhin siya rito. Minsan kailangan ng bata ang parehong tradisyonal at medikal na pangangalaga.'",
+                            "D. 'Salamat po sa pagdating ninyo. Nakikita ko ang inyong pag-aalala. Maaari ko bang sukatin muna ang kanyang temperatura?'"
+                        ],
+                        correct: 0,
+                        Answer: "Option A demonstrates respect for cultural practices while clearly communicating the urgent medical need and taking action."
+                    }
+                ]
+            },
+            prioritization: {
+                key: 'prioritization',
+                title: "Prioritization",
+                description: "You are the only community health nurse in Barangay Hindi Pinagpala. Multiple patients arrive at your health center with different conditions.",
+                questions: [
+                    {
+                        text: "Multiple patients arrive: an elderly fisherman with wound laceration, a mother with a 2-year-old child with high fever for 2 days, and a pregnant woman with severe abdominal pain. Which patient should you assess first?",
+                        options: [
+                            "A. Elderly fisherman with wound laceration",
+                            "B. Mother with a 2-year-old child with high fever",
+                            "C. Pregnant woman with severe abdominal pain",
+                            "D. Wait for all patients to rest before assessing"
+                        ],
+                        correct: 2,
+                        Answer: "C. Using ABC and maternal-fetal priority, pregnant women with severe abdominal pain may indicate a life-threatening condition such as placental abruption and should be assessed immediately."
+                    },
+                    {
+                        text: "After assessing the pregnant woman and finding signs of possible placental abruption, what is your next immediate action?",
+                        options: [
+                            "A. Prepare for emergency transfer to a hospital",
+                            "B. Give oral pain medications",
+                            "C. Ask the mother to rest and monitor at home",
+                            "D. Call another nurse to handle the other patients first"
+                        ],
+                        correct: 0,
+                        Answer: "A. Placental abruption is an obstetric emergency requiring hospital-level care. Prompt transfer is critical for maternal and fetal safety."
+                    },
+                    {
+                        text: "The elderly fisherman is experiencing anxiety but is alert and speaking in full sentences. Vital signs: RR 24, SpO₂ 94%, HR 110. How do you prioritize him?",
+                        options: [
+                            "A. Immediately provide oxygen and monitor closely",
+                            "B. Assess after the pregnant woman is stabilized",
+                            "C. Ask him to wait since he is talking normally",
+                            "D. Send him home with instructions"
+                        ],
+                        correct: 1,
+                        Answer: "B. Although the fisherman has concerning vital signs, pregnancy emergencies take precedence, and he is still alert and able to maintain airway."
+                    },
+                    {
+                        text: "The 2-year-old child has a high fever (38.5°C) with lethargy and decreased appetite. What is your initial action?",
+                        options: [
+                            "A. Perform history taking and administer antipyretics",
+                            "B. Place child in observation while focusing on pregnant woman",
+                            "C. Immediately start IV antibiotics",
+                            "D. Ask the mother to give home remedies"
+                        ],
+                        correct: 0,
+                        Answer: "A. Fever in a young child is concerning, but not immediately life-threatening compared to maternal emergencies. Initial care includes assessment, antipyretics, and monitoring."
+                    },
+                    {
+                        text: "The mother of the febrile child requests that her child be included in the first boat, stating they live far from the health center. What is the MOST appropriate response?",
+                        options: [
+                            "A. 'I understand your concern. I need to attend to the patient with the most critical condition first, but your child will receive care immediately after stabilization.'",
+                            "B. 'All patients are equally important, but emergencies must be prioritized; your child will be attended to as soon as possible.'",
+                            "C. 'Your child is fine for now; the other patient has a higher risk, so please wait calmly.'",
+                            "D. 'Please wait your turn; I cannot explain everything right now.'"
+                        ],
+                        correct: 0,
+                        Answer: "A. This demonstrates therapeutic communication, empathy, and transparency while educating the caregiver about prioritization."
+                    }
+                ]
+            },
+            improvisation: {
+                key: 'improvisation',
+                title: "Safe Improvisation and Resource Management",
+                description: "A sudden low tide has delayed supply boats. You must safely improvise using available supplies without compromising patient safety.",
+                questions: [
+                    {
+                        text: "A patient needs warm compress for muscle pain, but the clinic has no heating pads. What is the safest improvised method?",
+                        options: [
+                            "A. Heat a cloth directly over a flame until warm",
+                            "B. Use a bottle or gloves filled with warm tap water, sealed properly, and wrapped in a cloth",
+                            "C. Use hot seawater in a plastic bag for compress",
+                            "D. Ask the patient to place the cloth under the sun and apply immediately"
+                        ],
+                        correct: 1,
+                        Answer: "B. Warm water in a container or tightly sealed gloves wrapped in cloth is safe and controllable. Other options risk burns, contamination, or are ineffective."
+                    },
+                    {
+                        text: "There is no clean running water for wound cleaning. What is the safest option?",
+                        options: [
+                            "A. Use bottled drinking water plus antiseptic for wound cleansing",
+                            "B. Use seawater because it is 'natural and has salt'",
+                            "C. Clean the wound with cloth soaked in alcohol",
+                            "D. Ask the family to keep the wound untouched until safe water becomes available"
+                        ],
+                        correct: 0,
+                        Answer: "A. Commercial bottled water is safe. Seawater is contaminated, alcohol may cause irritation, and leaving wounds untouched risks infection."
+                    },
+                    {
+                        text: "A child needs ORS but there is no ORS packet available. What is the safest improvised recipe?",
+                        options: [
+                            "A. 1 teaspoon salt + 8 teaspoons sugar in 1 liter of bottled water",
+                            "B. 1 tablespoon salt + 1 tablespoon sugar in 1 liter of water",
+                            "C. 1 teaspoon sugar + 1 teaspoon salt in 500 ml of tap water",
+                            "D. A pinch of salt and two spoonfuls of sugar in one cup of warm water"
+                        ],
+                        correct: 0,
+                        Answer: "A. The WHO/UNICEF standard recipe is approximately 8 teaspoons of sugar and 1 teaspoon of salt per liter of clean water, making option A the closest and safest improvisation."
+                    },
+                    {
+                        text: "A teenager arrives with a wrist injury. You have no splint. What is the safest available object to immoblize it?",
+                        options: [
+                            "A. A water bottle applied directly without cloth",
+                            "B. A wooden plank without padding",
+                            "C. A cardboard padded with cloth",
+                            "D. A tightly wrapped towel for firm compression"
+                        ],
+                        correct: 2,
+                        Answer: "C. Cardboard with padding provides stable yet safe rigidity."
+                    },
+                    {
+                        text: "A patient needs a non-pharmacological intervention for mild swelling in the ankle, but there are no ice packs. What is the best improvised solution?",
+                        options: [
+                            "A. Use a towel soaked in cold water, wring it out, and apply it to the ankle",
+                            "B. Submerge the ankle in cold seawater",
+                            "C. Use a plastic bag of frozen food wrapped in a towel",
+                            "D. Tell the patient to wait for supplies and do nothing for now"
+                        ],
+                        correct: 2,
+                        Answer: "C. A bag of frozen food wrapped in a cloth acts as a safe, temporary ice pack. Seawater is a source of infection, and cold water alone is not as effective."
+                    }
+                ]
+            }
+        };
+
+        const instructorPass = "group35";
+        let currentScenario = null;
+        let currentQuestionIndex = 0;
+        let studentInfo = {};
+        
+        // Structure to track results for all scenarios
+        let quizState = {
+            cultural: { score: 0, total: 0, completed: false, answers: [] },
+            prioritization: { score: 0, total: 0, completed: false, answers: [] },
+            improvisation: { score: 0, total: 0, completed: false, answers: [] },
+            feedback: { q1: null, q2: null, q3: null }
+        };
+
+        // --- Utility Functions ---
+
+        function showElement(id) { document.getElementById(id).style.display = 'block'; }
+        function hideElement(id) { document.getElementById(id).style.display = 'none'; }
+        function updateScenarioButtons() {
+            for (const key in scenarios) {
+                const btn = document.getElementById(`btn-${key}`);
+                if (btn) {
+                    if (quizState[key].completed) {
+                        btn.classList.add('completed');
+                        // Make completed buttons clickable again to review results
+                        btn.disabled = false; 
+                    } else {
+                        btn.classList.remove('completed');
+                        btn.disabled = false; // Enable all incomplete scenarios
+                    }
+                }
+            }
+        }
+
+        function checkAllScenariosComplete() {
+            return quizState.cultural.completed && quizState.prioritization.completed && quizState.improvisation.completed;
+        }
+
+        // --- Student Flow ---
+
+        function submitStudentInfo() {
+            const name = document.getElementById('studentName').value.trim();
+            const email = document.getElementById('studentEmail').value.trim();
+            const year = document.getElementById('studentYear').value.trim();
+
+            if (!name || !email || !year) {
+                alert('Please fill in all student information fields.');
+                return;
+            }
+
+            studentInfo = { name, email, year, timestamp: new Date().toLocaleString() };
+            
+            // Hide login, show scenario selector
+            hideElement('instructorLogin');
+            hideElement('studentInfo');
+            showElement('scenarioSelector');
+            updateScenarioButtons();
+        }
+
+        function startScenario(scenarioKey) {
+            currentScenario = scenarioKey;
+            currentQuestionIndex = 0;
+
+            // Hide scenario selector
+            hideElement('scenarioSelector');
+            hideElement('completion');
+            hideElement('finalFeedback');
+            
+            // Show question container and progress
+            showElement('questionContainer');
+            showElement('progress');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const scenarioData = scenarios[currentScenario];
+            const totalQuestions = scenarioData.questions.length;
+            const question = scenarioData.questions[currentQuestionIndex];
+            const currentQuestionNumber = currentQuestionIndex + 1;
+            
+            if (!question) {
+                showScenarioCompletion();
+                return;
+            }
+            
+            const state = quizState[currentScenario];
+            const isAnswered = state.answers[currentQuestionIndex] !== undefined;
+            const savedAnswerIndex = isAnswered ? state.answers[currentQuestionIndex].selectedIndex : null;
+            
+            let optionsHtml = question.options.map((option, index) => {
+                const isSelected = savedAnswerIndex === index;
+                const isCorrect = question.correct === index;
+                let classes = 'option';
+                
+                if (isAnswered) {
+                    classes += isSelected ? (isCorrect ? ' correct' : ' incorrect') : '';
+                    if (!isSelected && isCorrect) {
+                         // Highlight the correct answer even if not selected
+                         classes += ' correct'; 
+                    }
+                } else {
+                    classes += isSelected ? ' selected' : '';
+                }
+
+                return `<div class="${classes}" data-index="${index}" onclick="${isAnswered ? '' : 'selectOption(this)'}">
+                            ${option}
+                        </div>`;
+            }).join('');
+            
+            // Generate question HTML
+            document.getElementById('questionContainer').innerHTML = `
+                <div class="question-header">
+                    ${scenarioData.title} - Question ${currentQuestionNumber} of ${totalQuestions}
+                </div>
+                <div class="question-text">${question.text}</div>
+                <div class="options" id="optionsContainer">${optionsHtml}</div>
+                <div class="feedback ${isAnswered ? 'show' : ''} ${isAnswered && state.answers[currentQuestionIndex].isCorrect ? 'correct' : 'incorrect'}" id="feedback-${currentQuestionIndex}">
+                    <h3>${isAnswered && state.answers[currentQuestionIndex].isCorrect ? '✅ Correct Answer!' : '❌ Incorrect Answer'}</h3>
+                    <p><strong>Answer:</strong> ${question.Answer}</p>
+                </div>
+                <div class="navigation">
+                    <button class="nav-btn" id="prevBtn" onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''}>
+                        ⬅️ Previous
+                    </button>
+                    <button class="nav-btn" id="checkBtn" onclick="checkAnswer()" ${isAnswered ? 'disabled' : ''} style="display: ${isAnswered ? 'none' : 'block'};">
+                        Check Answer
+                    </button>
+                    <button class="nav-btn" id="nextBtn" onclick="nextQuestion()" ${!isAnswered ? 'disabled' : ''}>
+                        ${currentQuestionIndex === totalQuestions - 1 ? 'Finish Scenario ➡️' : 'Next ➡️'}
+                    </button>
+                </div>
+            `;
+            
+            updateProgress();
+        }
+
+        function selectOption(element) {
+            const options = document.getElementById('optionsContainer').querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('checkBtn').disabled = false;
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('.options .selected');
+            if (!selectedOption) {
+                alert('Please select an option first.');
+                return;
+            }
+
+            const state = quizState[currentScenario];
+            const question = scenarios[currentScenario].questions[currentQuestionIndex];
+            const selectedIndex = parseInt(selectedOption.dataset.index);
+            const isCorrect = selectedIndex === question.correct;
+            
+            // Save answer state
+            state.answers[currentQuestionIndex] = {
+                selectedIndex,
+                isCorrect,
+                questionText: question.text,
+                selectedOption: question.options[selectedIndex]
+            };
+            
+            // Recalculate score for the scenario
+            state.score = state.answers.filter(a => a && a.isCorrect).length;
+            state.total = scenarios[currentScenario].questions.length;
+
+            // Apply feedback classes
+            const options = document.getElementById('optionsContainer').querySelectorAll('.option');
+            options.forEach(opt => {
+                const index = parseInt(opt.dataset.index);
+                opt.onclick = null; // Disable further clicks
+                if (index === question.correct) {
+                    opt.classList.add('correct');
+                } else if (index === selectedIndex) {
+                    opt.classList.add('incorrect');
+                }
+            });
+            
+            // Show Answer and navigation update
+            // Get the feedback div element
+const feedbackDiv = document.getElementById(`feedback-${currentQuestionIndex}`);
+
+// 1. Remove existing state and add the correct styling class
+// (This ensures the green/red color is correct)
+feedbackDiv.classList.remove('correct', 'incorrect'); 
+feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+// 2. Set the correct header text based on the result
+// (This fixes the "Incorrect Answer" text showing for correct answers)
+const feedbackHeaderText = isCorrect ? '✅ Correct Answer!' : '❌ Incorrect Answer';
+feedbackDiv.querySelector('h3').textContent = feedbackHeaderText;
+
+// 3. Show the rationale and navigation update
+feedbackDiv.classList.add('show');
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('nextBtn').disabled = false;
+            
+            updateProgress();
+        }
+
+        function nextQuestion() {
+            const totalQuestions = scenarios[currentScenario].questions.length;
+            if (currentQuestionIndex < totalQuestions - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showScenarioCompletion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function updateProgress() {
+            const state = quizState[currentScenario];
+            const totalQuestions = scenarios[currentScenario].questions.length;
+            const answeredQuestions = state.answers.length;
+
+            const percentAnswered = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+            const scoreText = `Score: ${state.score}/${state.total || totalQuestions}`;
+
+            document.getElementById('progressFill').style.width = `${percentAnswered}%`;
+            document.getElementById('progressFill').textContent = `${Math.round(percentAnswered)}% Answered`;
+            document.getElementById('score').textContent = scoreText;
+        }
+
+        function showScenarioCompletion() {
+            quizState[currentScenario].completed = true;
+            
+            hideElement('questionContainer');
+            hideElement('progress');
+            
+            const state = quizState[currentScenario];
+            const total = state.total;
+            const score = state.score;
+            const percentage = total > 0 ? ((score / total) * 100).toFixed(0) : 0;
+            const isAllComplete = checkAllScenariosComplete();
+
+            document.getElementById('scenarioTitle').textContent = scenarios[currentScenario].title;
+            document.getElementById('scenarioScore').textContent = `${score}/${total} (${percentage}%)`;
+            
+            // Update completion button text
+            const completionButton = document.getElementById('completionButton');
+            if (isAllComplete) {
+                completionButton.textContent = 'Proceed to Final Feedback 📝';
+                completionButton.classList.remove('restart-btn');
+                completionButton.classList.add('submit-feedback-btn'); // Use feedback button style
+            } else {
+                completionButton.textContent = 'Continue to Scenario Selection ➡️';
+                completionButton.classList.add('restart-btn');
+                completionButton.classList.remove('submit-feedback-btn');
+            }
+
+            // Populate summary
+            const summaryHtml = state.answers.map((answer, index) => {
+                const question = scenarios[currentScenario].questions[index];
+                const statusClass = answer.isCorrect ? 'correct-answer' : 'incorrect-answer';
+                const status = answer.isCorrect ? 'Correct' : 'Incorrect';
+                
+                return `<div class="answer-item ${statusClass}">
+                            <strong>Q${index + 1}:</strong> ${question.text.substring(0, 50)}...<br>
+                            <strong>Your Answer:</strong> ${answer.selectedOption}<br>
+                            <strong>Status:</strong> ${status}<br>
+                            <em>Answer:</em> ${question.Answer}
+                        </div>`;
+            }).join('');
+
+            document.getElementById('resultsSummary').innerHTML = `<h3>Scenario Summary</h3>${summaryHtml}`;
+            
+            showElement('completion');
+        }
+        
+        function handleScenarioCompletion() {
+            if (checkAllScenariosComplete()) {
+                showFinalFeedbackForm();
+            } else {
+                // Return to scenario selection
+                hideElement('completion');
+                showElement('scenarioSelector');
+                updateScenarioButtons();
+            }
+        }
+        
+        // --- Final Feedback and Results ---
+
+        function showFinalFeedbackForm() {
+            hideElement('completion');
+            showElement('finalFeedback');
+            // Ensure all likert scales are reset/unselected when showing
+            document.querySelectorAll('.likert-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('submitFeedbackBtn').disabled = true;
+            hideElement('finalSummary'); // Hide final summary until submission
+        }
+
+        function selectLikert(element) {
+            const scale = element.closest('.likert-scale');
+            const questionKey = scale.dataset.question;
+            const value = element.dataset.value;
+
+            // Deselect all options in this scale
+            scale.querySelectorAll('.likert-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Select the clicked option
+            element.classList.add('selected');
+            
+            // Save value
+            quizState.feedback[questionKey] = parseInt(value);
+            
+            // Check if all feedback questions are answered
+            checkFeedbackFormValidity();
+        }
+        
+        function checkFeedbackFormValidity() {
+            const feedbackState = quizState.feedback;
+            const allAnswered = feedbackState.q1 !== null && feedbackState.q2 !== null && feedbackState.q3 !== null;
+            document.getElementById('submitFeedbackBtn').disabled = !allAnswered;
+        }
+
+
+        async function submitFeedback() {
+          
+            // Calculate overall score
+            let totalCorrect = 0;
+            let totalQuestions = 0;
+            for (const key in scenarios) {
+                totalCorrect += quizState[key].score;
+                totalQuestions += scenarios[key].questions.length;
+            }
+            
+            const overallScore = `${totalCorrect}/${totalQuestions}`;
+            const overallPercentage = totalQuestions > 0 ? ((totalCorrect / totalQuestions) * 100).toFixed(1) : 0;
+            
+            // Prepare the final result object
+            const finalResult = {
+                ...studentInfo,
+                totalCorrect,
+                totalQuestions,
+                overallScore: overallScore,
+                overallPercentage: overallPercentage,
+                feedback: quizState.feedback,
+                scenarioResults: {
+                    cultural: { score: quizState.cultural.score, total: quizState.cultural.total },
+                    prioritization: { score: quizState.prioritization.score, total: quizState.prioritization.total },
+                    improvisation: { score: quizState.improvisation.score, total: quizState.improvisation.total },
+                }
+            };
+
+// Save result to persistent storage (accessible to admin)
+await saveResult(finalResult);
+
+            // Display final results
+            document.getElementById('totalScoreDisplay').innerHTML = `
+                <div style="font-size: 0.5em; color: #666;">Overall Score:</div>
+                ${overallScore} <span style="font-size: 0.5em; color: #666;">(${overallPercentage}%)</span>
+            `;
+            
+            document.getElementById('submitFeedbackBtn').style.display = 'none';
+            showElement('finalSummary');
+        }
+
+
+        function restartSimulation() {
+            // Reset state
+            currentScenario = null;
+            currentQuestionIndex = 0;
+            studentInfo = {};
+            quizState = {
+                cultural: { score: 0, total: 0, completed: false, answers: [] },
+                prioritization: { score: 0, total: 0, completed: false, answers: [] },
+                improvisation: { score: 0, total: 0, completed: false, answers: [] },
+                feedback: { q1: null, q2: null, q3: null }
+            };
+            
+            // Hide all result/quiz elements
+            hideElement('adminPanel');
+            hideElement('scenarioSelector');
+            hideElement('progress');
+            hideElement('questionContainer');
+            hideElement('completion');
+            hideElement('finalFeedback');
+
+            // Show student info form
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentEmail').value = '';
+            document.getElementById('studentYear').value = '';
+            showElement('studentInfo');
+        }
+        
+        // --- Local Storage and Admin Functions (Unchanged for scope, but included for completeness) ---
+
+let results = [];
+
+async function loadResults() {
+    try {
+        const stored = await window.storage.get('simulationResults', true);
+        results = stored ? JSON.parse(stored.value) : [];
+    } catch (error) {
+        console.log('No existing results found');
+        results = [];
+    }
+}
+
+async function saveResult(result) {
+    try {
+        if (!result.id) {
+            result.id = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        if (!result.timestamp) {
+            result.timestamp = new Date().toISOString();
+        }
+        
+        results.push(result);
+        await window.storage.set('simulationResults', JSON.stringify(results), true);
+        await saveToGoogleSheets(result);
+        return true;
+    } catch (error) {
+        console.error('Error saving result:', error);
+        return false;
+    }
+}
+        
+async function saveToGoogleSheets(result) {
+    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === ' https://script.google.com/macros/s/AKfycbyYO3Wi5n9lR9ip8rkVhSLQOaZ35kL7TRo2hjSW9YnbyWbAEBDKoiMr83VVvG5QNfCj/exec') {
+        console.error('❌ Please configure GOOGLE_SCRIPT_URL first!');
+        alert('Setup Error: Google Sheets URL not configured. Please contact your instructor.');
+        return false;
+    }
+    
+    const recordData = {
+        studentName: result.name,
+        email: result.email,
+        yearSection: result.year,
+        overallScore: result.overallScore,
+        overallPercentage: result.overallPercentage,
+        culturalScore: `${result.scenarioResults.cultural.score}/${result.scenarioResults.cultural.total}`,
+        prioritizationScore: `${result.scenarioResults.prioritization.score}/${result.scenarioResults.prioritization.total}`,
+        improvisationScore: `${result.scenarioResults.improvisation.score}/${result.scenarioResults.improvisation.total}`,
+        feedbackQ1: result.feedback.q1,
+        feedbackQ2: result.feedback.q2,
+        feedbackQ3: result.feedback.q3
+    };
+
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(recordData)
+        });
+        
+        console.log('✅ Successfully saved to Google Sheets');
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Error saving to Google Sheets:', error);
+        alert('Warning: Your results may not have been saved. Please screenshot your scores and contact your instructor.');
+        return false;
+    }
+}
+
+async function loadAllResults() {
+    try {
+        // First try to load from persistent storage
+        const stored = await window.storage.get('simulationResults', true);
+        if (stored && stored.value) {
+            const parsedResults = JSON.parse(stored.value);
+            if (Array.isArray(parsedResults)) {
+                return parsedResults;
+            }
+        }
+    } catch (error) {
+        console.log('No results in persistent storage:', error.message);
+    }
+    
+    // Return empty array if no data
+    return [];
+}
+
+        function parseScore(str) {
+            const [score, total] = str.split('/').map(n => parseInt(n) || 0);
+            return {score, total};
+        }
+
+        async function instructorLogin() {
+            const password = document.getElementById('instructorPassword').value;
+            if (password === instructorPass) {
+                hideElement('instructorLogin');
+                hideElement('studentInfo');
+                hideElement('scenarioSelector');
+                hideElement('completion');
+                hideElement('finalFeedback');
+                showElement('adminPanel');
+                document.getElementById('instructorPassword').value = '';
+            } else {
+                alert('Incorrect Instructor Password.');
+            }
+        }
+        
+        function logoutInstructor() {
+             hideElement('adminPanel');
+             showElement('instructorLogin');
+        }
+
+async function viewAllResults() {
+    if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === ' https://script.google.com/macros/s/AKfycbyYO3Wi5n9lR9ip8rkVhSLQOaZ35kL7TRo2hjSW9YnbyWbAEBDKoiMr83VVvG5QNfCj/exec') {
+        alert('Please configure GOOGLE_SCRIPT_URL first!');
+        return;
+    }
+    
+    const display = document.getElementById('allResultsDisplay');
+    display.innerHTML = '<p style="text-align: center;">📊 Loading student submissions...</p>';
+    
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL + '?action=getAll', {
+            method: 'GET'
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success' && result.data && result.data.length > 0) {
+            displayResults(result.data);
+        } else {
+            display.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <p>📭 No student submissions yet.</p>
+                    <p style="color: #666; margin-top: 10px;">Results will appear here after students complete the simulation.</p>
+                    <button class="view-results-btn" onclick="viewAllResults()" style="margin-top: 15px;">🔄 Refresh</button>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        
+        // Show link to Google Sheet as fallback
+        const sheetUrl = GOOGLE_SCRIPT_URL.replace('/macros/s/', '/spreadsheets/d/').replace('/exec', '/edit');
+        
+        display.innerHTML = `
+            <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Unable to Load Data</h3>
+                <p style="color: #856404;">The API may be experiencing issues. You can view results directly in Google Sheets:</p>
+                <a href="${GOOGLE_SCRIPT_URL.replace('/exec', '/edit').replace('/macros/s/', '/spreadsheets/d/')}" 
+                   target="_blank" 
+                   class="view-results-btn" 
+                   style="display: inline-block; margin-top: 15px; text-decoration: none;">
+                    📊 Open Google Sheet
+                </a>
+                <button class="view-results-btn" onclick="viewAllResults()" style="margin-left: 10px;">
+                    🔄 Try Again
+                </button>
+            </div>
+        `;
+    }
+}
+
+        function exportToCsv(filename, rows) {
+            const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+function exportDisplayedResults() {
+    const allResults = document.querySelectorAll('.student-result');
+    
+    if (allResults.length === 0) {
+        alert('No data to export. Please load results first.');
+        return;
+    }
+    
+    // Create CSV header
+    const headers = [
+        'Timestamp',
+        'Student Name',
+        'Email',
+        'Year & Section',
+        'Overall Score',
+        'Overall %',
+        'Cultural Score',
+        'Prioritization Score',
+        'Improvisation Score',
+        'Feedback Q1',
+        'Feedback Q2',
+        'Feedback Q3'
+    ];
+    
+    let csvContent = headers.join(',') + '\n';
+    
+    // Get data from API
+    fetch(GOOGLE_SCRIPT_URL + '?action=getAll')
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success' && result.data) {
+                result.data.forEach(record => {
+                    const row = [
+                        new Date(record.timestamp).toLocaleString(),
+                        `"${record.studentName}"`,
+                        record.email,
+                        `"${record.yearSection}"`,
+                        record.overallScore,
+                        record.overallPercentage,
+                        record.culturalScore,
+                        record.prioritizationScore,
+                        record.improvisationScore,
+                        record.feedbackQ1,
+                        record.feedbackQ2,
+                        record.feedbackQ3
+                    ];
+                    csvContent += row.join(',') + '\n';
+                });
+                
+                // Download CSV
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `CommuNARS_Results_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        })
+        .catch(error => {
+            console.error('Export error:', error);
+            alert('Error exporting data. Please try again or download directly from Google Sheets.');
+        });
+}
+
+
+        async function exportFinalResults() {
+             // Re-load result for the last student
+             const results = await loadAllResults();
+             const lastResult = results[results.length - 1];
+
+             const header = [
+                "Scenario", "Q Num", "Question", "Selected Option", "Is Correct", "Answer"
+             ];
+
+             const rows = [header];
+             
+             for (const key in scenarios) {
+                const scenarioData = scenarios[key];
+                const scenarioAnswers = quizState[key].answers;
+                
+                scenarioAnswers.forEach((answer, index) => {
+                    const question = scenarioData.questions[index];
+                    rows.push([
+                        scenarioData.title,
+                        index + 1,
+                        `"${question.text.replace(/"/g, '""')}"`,
+                        `"${answer.selectedOption.replace(/"/g, '""')}"`,
+                        answer.isCorrect ? 'Yes' : 'No',
+                        `"${question.Answer.replace(/"/g, '""')}"`
+                    ]);
+                });
+             }
+             
+             exportToCsv(`${lastResult.name.replace(/\s/g, '_')}_Simulation_Report.csv`, rows);
+        }
+        
+async function clearAllResults() {
+    if(confirm("Are you sure you want to clear ALL student results from Google Sheets? This action cannot be undone.")) {
+        try {
+            // Note: You'll need to add a 'clearAll' action to your Google Apps Script
+            alert('To clear Google Sheets data, please manually delete rows from your spreadsheet.');
+            // Alternatively, implement a clearAll endpoint in your Google Apps Script
+        } catch (error) {
+            console.error('Error clearing results:', error);
+        }
+    }
+}
+        
+document.addEventListener('DOMContentLoaded', () => {
+    // Load existing results from storage
+    loadResults();
+    // Start by showing instructor login by default
+    showElement('instructorLogin');
+});
+
+    </script>
+</body>
+</html>
